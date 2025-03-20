@@ -5,7 +5,7 @@ package academy.javapro;
  * Features overdraft protection and transaction fees.
  */
 public class CheckingAccount extends Account {
-    private final double overdraftLimit;
+    private double overdraftLimit;
     private static final double TRANSACTION_FEE = 1.5; // Fee per withdrawal
 
     /**
@@ -16,6 +16,7 @@ public class CheckingAccount extends Account {
      * @param initialBalance The initial balance
      * @param overdraftLimit The maximum allowed overdraft
      */
+
     public CheckingAccount(String accountNumber, String customerName, double initialBalance, double overdraftLimit) {
         super(accountNumber, customerName, initialBalance); // Call to the parent constructor
         this.overdraftLimit = overdraftLimit;
@@ -26,8 +27,9 @@ public class CheckingAccount extends Account {
      *
      * @return The overdraft limit
      */
+
     public double getOverdraftLimit() {
-        throw new UnsupportedOperationException("Method not implemented");
+        return overdraftLimit;
     }
 
     /**
@@ -36,7 +38,8 @@ public class CheckingAccount extends Account {
      * @param overdraftLimit The new overdraft limit
      */
     public void setOverdraftLimit(double overdraftLimit) {
-        throw new UnsupportedOperationException("Method not implemented");
+        this.overdraftLimit = overdraftLimit;
+        System.out.println("Overdraft limit updated to $" + String.format("%.2f", overdraftLimit));
     }
 
     /**
@@ -45,7 +48,20 @@ public class CheckingAccount extends Account {
      */
     @Override
     public void withdraw(double amount) {
-        throw new UnsupportedOperationException("Method not implemented");
+        double availableFunds = getBalance() + overdraftLimit;
+        if (amount + TRANSACTION_FEE > availableFunds) {
+            System.out.println("Withdrawal denied. Insufficient funds, even with overdraft.");
+            return;
+        }
+        System.out.println("Withdrew $" + String.format("%.2f", amount) + " from checking account");
+        setBalance(getBalance() - amount - TRANSACTION_FEE);
+        logTransaction("WITHDRAWAL", amount);
+        logTransaction("FEE", TRANSACTION_FEE);
+        System.out.println("Transaction fee: $" + String.format("%.2f", TRANSACTION_FEE));
+        
+        if (getBalance() < 0) {
+            System.out.println("Account is in overdraft. Current balance: $" + String.format("%.2f", getBalance()));
+        }
     }
 
     /**
